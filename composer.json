@@ -1,0 +1,22 @@
+{
+  "name": "ltd-beget/dns-zone-parser",
+  "type": "library",
+  "description": "PHP Class for parsing dns zone file content",
+  "keywords": [
+    "dns", "dns zone", "dns parser"
+  ],
+  "authors": [
+    {
+      "name": "Viskov Sergey",
+      "homepage": "https://github.com/voksiv"
+    }
+  ],
+  "require": {
+    "php": ">=5.5"
+  },
+  "autoload": {
+    "psr-0": {
+      "LTDBeget\\dnsZoneParser": "src"
+    }
+  }
+}
