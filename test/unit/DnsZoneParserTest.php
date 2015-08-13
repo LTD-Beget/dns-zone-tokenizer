@@ -52,7 +52,7 @@ class DnsZoneParserTest extends PHPUnit_Framework_TestCase
                     'TYPE' => 'AAAA',
                     'RDATA' =>
                         array (
-                            'ADDRESS' => '2607:f0d0:1002:0051:0000:0000:0000:0004',
+                            'ADDRESS' => '::ffff:a.b.c.d',
                         ),
                 ),
             3 =>
@@ -88,7 +88,7 @@ class DnsZoneParserTest extends PHPUnit_Framework_TestCase
                     'TYPE' => 'CNAME',
                     'RDATA' =>
                         array (
-                            'CNAME' => 'autoconfig.beget.ru.',
+                            'CNAME' => 'cf-ssl00000-protected.example.com.',
                         ),
                 ),
             6 =>
@@ -125,9 +125,196 @@ class DnsZoneParserTest extends PHPUnit_Framework_TestCase
                             'TXTDATA' => 'Some text another Some text',
                         ),
                 ),
+            9 =>
+                array (
+                    'NAME' => 'testtxt',
+                    'TTL' => '600',
+                    'IN' => 'IN',
+                    'TYPE' => 'TXT',
+                    'RDATA' =>
+                        array (
+                            'TXTDATA' => 'v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDZKI3U+9acu3NfEy0NJHIPydxnPLPpnAJ7k2JdrsLqAK1uouMudHI20pgE8RMldB/TeWKXYoRidcGCZWXleUzldDTwZAMDQNpdH1uuxym0VhoZpPbI1RXwpgHRTbCk49VqlC',
+                        ),
+                ),
+            10 =>
+                array (
+                    'NAME' => 'testmx',
+                    'TTL' => '600',
+                    'IN' => 'IN',
+                    'TYPE' => 'MX',
+                    'RDATA' =>
+                        array (
+                            'PREFERENCE' => '20',
+                            'EXCHANGE' => '@',
+                        ),
+                ),
+            11 =>
+                array (
+                    'NAME' => 'testmx2',
+                    'TTL' => '600',
+                    'IN' => 'IN',
+                    'TYPE' => 'MX',
+                    'RDATA' =>
+                        array (
+                            'PREFERENCE' => '20',
+                            'EXCHANGE' => '.',
+                        ),
+                ),
+            12 =>
+                array (
+                    'NAME' => '_domainkeytxt',
+                    'TTL' => '600',
+                    'IN' => 'IN',
+                    'TYPE' => 'TXT',
+                    'RDATA' =>
+                        array (
+                            'TXTDATA' => 't=y;o=~;\0',
+                        ),
+                ),
+            13 =>
+                array (
+                    'NAME' => 'www',
+                    'TTL' => '600',
+                    'IN' => 'IN',
+                    'TYPE' => 'TXT',
+                    'RDATA' =>
+                        array (
+                            'TXTDATA' => '@ A 79.125.10.157 ',
+                        ),
+                ),
+            14 =>
+                array (
+                    'NAME' => 'txt3',
+                    'TTL' => '600',
+                    'IN' => 'IN',
+                    'TYPE' => 'TXT',
+                    'RDATA' =>
+                        array (
+                            'TXTDATA' => 'www CNAME ;;;;\'werwerwer\'\0010',
+                        ),
+                ),
+            15 =>
+                array (
+                    'NAME' => 'nstest',
+                    'TTL' => '300',
+                    'IN' => 'IN',
+                    'TYPE' => 'NS',
+                    'RDATA' =>
+                        array (
+                            'NSDNAME' => 'ns1',
+                        ),
+                ),
+            16 =>
+                array (
+                    'NAME' => 'nstest2',
+                    'TTL' => '300',
+                    'IN' => 'IN',
+                    'TYPE' => 'NS',
+                    'RDATA' =>
+                        array (
+                            'NSDNAME' => '85.249.229.194',
+                        ),
+                ),
+            17 =>
+                array (
+                    'NAME' => 'xn----7sbfndkfpirgcajeli2a4pnc.xn----7sbbfcqfo2cfcagacemif0ap5q',
+                    'TTL' => '300',
+                    'IN' => 'IN',
+                    'TYPE' => 'NS',
+                    'RDATA' =>
+                        array (
+                            'NSDNAME' => '1.1.1.1',
+                        ),
+                ),
+            18 =>
+                array (
+                    'NAME' => 'casino',
+                    'TTL' => '600',
+                    'IN' => 'IN',
+                    'TYPE' => 'NS',
+                    'RDATA' =>
+                        array (
+                            'NSDNAME' => '@',
+                        ),
+                ),
+            19 =>
+                array (
+                    'NAME' => 'bonus',
+                    'TTL' => '600',
+                    'IN' => 'IN',
+                    'TYPE' => 'CNAME',
+                    'RDATA' =>
+                        array (
+                            'CNAME' => '@',
+                        ),
+                ),
+            20 =>
+                array (
+                    'NAME' => '*',
+                    'TTL' => '600',
+                    'IN' => 'IN',
+                    'TYPE' => 'CNAME',
+                    'RDATA' =>
+                        array (
+                            'CNAME' => 's',
+                        ),
+                ),
+            21 =>
+                array (
+                    'NAME' => '@',
+                    'TTL' => '600',
+                    'IN' => 'IN',
+                    'TYPE' => 'SRV',
+                    'RDATA' =>
+                        array (
+                            'PRIORITY' => '10',
+                            'WEIGHT' => '0',
+                            'PORT' => '5269',
+                            'TARGET' => '@',
+                        ),
+                ),
+
+            22 =>
+                array (
+                    'NAME' => 'xmpp',
+                    'TTL' => '600',
+                    'IN' => 'IN',
+                    'TYPE' => 'SRV',
+                    'RDATA' =>
+                        array (
+                            'PRIORITY' => '10',
+                            'WEIGHT' => '0',
+                            'PORT' => '5222',
+                            'TARGET' => '81.211.107.230.',
+                        ),
+                ),
+            23 =>
+                array (
+                    'NAME' => 'www222',
+                    'IN' => 'IN',
+                    'TTL' => '0',
+                    'TYPE' => 'CNAME',
+                    'RDATA' =>
+                        array (
+                            'CNAME' => 'lifun.ru.',
+                        ),
+                ),
+            24 =>
+                array (
+                    'NAME' => '46.20.191.35',
+                    'TTL' => '3600',
+                    'IN' => 'IN',
+                    'TYPE' => 'PTR',
+                    'RDATA' =>
+                        array (
+                            'PTRDNAME' => 'office',
+                        ),
+                ),
         );
         $this->runParse($plain_data, $expected_parsed_data);
     }
+
+
 
     /**
      * @param String $plain_data
