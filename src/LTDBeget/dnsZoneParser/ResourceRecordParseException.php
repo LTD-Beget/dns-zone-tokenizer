@@ -15,7 +15,7 @@ namespace LTDBeget\dnsZoneParser;
  * Class ResourceRecordParseException
  * @package beget\lib\dns\lib\exception
  */
-class ResourceRecordParseException extends \Exception
+class ResourceRecordParseException extends \RuntimeException
 {
 
 }

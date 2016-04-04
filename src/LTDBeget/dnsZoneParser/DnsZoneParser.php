@@ -31,7 +31,7 @@ class DnsZoneParser
 
     /**
      * Spited by chars plain string
-     * @var Array
+     * @var array
      */
     protected $data;
 
