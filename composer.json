@@ -1,5 +1,5 @@
 {
-  "name": "ltd-beget/dns-zone-parser",
+  "name": "ltd-beget/dns-zone-tokenizer",
   "license": "MIT",
   "type": "library",
   "description": "tokenize dns zone files and that's all, folks.",
