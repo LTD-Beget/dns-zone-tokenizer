@@ -5,11 +5,12 @@
  * @time:   13:51
  */
 
-namespace LTDBeget\dnsZoneParser\test\unit;
 
-use LTDBeget\dnsZoneParser\DnsZoneParser;
-use PHPUnit_Framework_TestCase;
+use LTDBeget\dns\Tokenizer;
 
+/**
+ * Class DnsZoneParserTest
+ */
 class DnsZoneParserTest extends PHPUnit_Framework_TestCase
 {
     public function testParse()
@@ -323,10 +324,10 @@ class DnsZoneParserTest extends PHPUnit_Framework_TestCase
     protected function runParse($plain_data, array $expected_parsed_data)
     {
         /**
-         * @var DnsZoneParser $class
+         * @var Tokenizer $class
          */
-        $class = DnsZoneParser::class;
-        $this->assertEquals($expected_parsed_data, $class::parse($plain_data));
+        $class = Tokenizer::class;
+        $this->assertEquals($expected_parsed_data, $class::tokenize($plain_data));
     }
 
     /**

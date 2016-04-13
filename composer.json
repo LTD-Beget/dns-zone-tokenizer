@@ -1,7 +1,8 @@
 {
   "name": "ltd-beget/dns-zone-parser",
+  "license": "MIT",
   "type": "library",
-  "description": "PHP Class for parsing dns zone file content",
+  "description": "tokenize dns zone files and that's all, folks.",
   "keywords": [
     "dns", "dns zone", "dns parser"
   ],
@@ -12,7 +13,8 @@
     }
   ],
   "require": {
-    "php": ">=5.5"
+    "php": ">=7.0",
+    "ltd-beget/stringstream" : "~1.0"
   },
   "require-dev": {
     "theseer/phpdox": "0.8.*",
@@ -21,8 +23,7 @@
   },
   "autoload": {
     "psr-0": {
-      "LTDBeget\\dnsZoneParser": "src",
-      "LTDBeget\\dnsZoneParser\\test": "test"
+      "LTDBeget\\dns": "src"
     }
   }
 }

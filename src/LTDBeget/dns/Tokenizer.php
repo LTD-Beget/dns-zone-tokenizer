@@ -6,25 +6,23 @@
  */
 
 
-namespace LTDBeget\dnsZoneParser;
+namespace LTDBeget\dns;
 
 
 /**
- * FiniteStateMachine for parsing dns zone files
- *
- * Class
- * @package beget\lib\dns\lib\parser
+ * Class Tokenizer
+ * @package LTDBeget\dns
  */
-class DnsZoneParser
+final class Tokenizer
 {
     /**
      * Machine will parse plain data in array of records
      * which filling depends on record type
      * @param String $data content of dns zone file as string
      * @return array result of parsing
-     * @throws ResourceRecordParseException
+     * @throws SyntaxErrorException
      */
-    public static function parse($data)
+    public static function tokenize(string $data) : array 
     {
         return self::getInstance()->analyze($data);
     }
@@ -63,7 +61,7 @@ class DnsZoneParser
 
     /**
      * singleton
-     * @var DnsZoneParser
+     * @var Tokenizer
      */
     protected static $instance = null;
 
@@ -246,7 +244,7 @@ class DnsZoneParser
     /**
      * Parse name of resource record
      * @param bool $starts
-     * @throws ResourceRecordParseException
+     * @throws SyntaxErrorException
      */
     protected function extractName($starts = false)
     {
@@ -271,7 +269,7 @@ class DnsZoneParser
 
     /**
      * Parse ttl from resource record
-     * @throws ResourceRecordParseException
+     * @throws SyntaxErrorException
      */
     protected function extractTtl()
     {
@@ -291,13 +289,13 @@ class DnsZoneParser
             $this->parsedRecord["TTL"] .= chr($ord);
             goto start;
         } else {
-            throw new ResourceRecordParseException("Failed parse ttl, digit expects;");
+            throw new SyntaxErrorException("Failed parse ttl, digit expects;");
         }
     }
 
     /**
      * Parse class (IN) from resource record
-     * @throws ResourceRecordParseException
+     * @throws SyntaxErrorException
      */
     protected function extractIn()
     {
@@ -321,13 +319,13 @@ class DnsZoneParser
         } elseif($ord === 32) {
             $this->extractType();
         } else {
-            throw new ResourceRecordParseException("Failed parse IN");
+            throw new SyntaxErrorException("Failed parse IN");
         }
     }
 
     /**
      * Parse type of resource record
-     * @throws ResourceRecordParseException
+     * @throws SyntaxErrorException
      */
     protected function extractType()
     {
@@ -349,14 +347,14 @@ class DnsZoneParser
             $this->parsedRecord["TYPE"] .= chr($ord);
             goto start;
         } else {
-            throw new ResourceRecordParseException("Failed parse type, letter expects;");
+            throw new SyntaxErrorException("Failed parse type, letter expects;");
         }
     }
 
     /**
      * Define type of RDATA
      * @param String $type type of resource record
-     * @throws ResourceRecordParseException
+     * @throws SyntaxErrorException
      */
     protected function extractRData($type)
     {
@@ -389,7 +387,7 @@ class DnsZoneParser
                 $this->extractTxtData();
                 break;
             default:
-                throw new ResourceRecordParseException("Failed parse RDATA, Unknown type: $type;");
+                throw new SyntaxErrorException("Failed parse RDATA, Unknown type: $type;");
                 break;
         }
     }
