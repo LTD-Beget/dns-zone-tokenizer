@@ -1,0 +1,22 @@
+;
+; BIND reverse data file for BEGET-NEW-NET1 5.101.159.0/24 zone
+;
+$TTL 3600
+@   IN  SOA ns1.beget.ru.   hostmaster.beget.ru. (
+    2014070701  ; Serial
+    3600        ; Refresh
+    600         ; Retry
+    86400       ; Expire
+    3600        ; Negative Cache TTL
+)
+
+;; NS
+@   IN  NS      ns1.beget.ru.
+@   IN  NS      ns2.beget.ru.
+
+;; SYSTEM
+1   IN  PTR     rt01.beget.ru.
+3   IN  PTR     ns3.beget.ru.
+5   IN  PTR     ns5.beget.ru.
+11  IN  PTR     ns1.beget.ru.
+12  IN  PTR     ns2.beget.com.ua.
