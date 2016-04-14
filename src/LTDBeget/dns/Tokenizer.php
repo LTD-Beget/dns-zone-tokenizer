@@ -82,6 +82,7 @@ final class Tokenizer
                 $this->ignoreComment();
             } else {
                 $this->extractRecord();
+                $this->stream->ignoreWhitespace();
             }
         } while (!$this->stream->isEnd());
 
