@@ -1,18 +1,25 @@
 <?php
 /**
  * @author: Viskov Sergey
- * @date: 14.04.16
- * @time: 4:50
+ * @date  : 14.04.16
+ * @time  : 4:50
  */
 
 namespace LTDBeget\dns\record;
 
-
 use LTDBeget\dns\SyntaxErrorException;
 use LTDBeget\stringstream\StringStream;
 
+/**
+ * Class RData
+ *
+ * @package LTDBeget\dns\record
+ */
 class RData
 {
+    /**
+     * @var array
+     */
     private static $rdataFormats = [
         'SOA'   => [
             'MNAME'   => 'defaultExtractor',
@@ -63,8 +70,9 @@ class RData
 
     /**
      * RData constructor.
+     *
      * @param StringStream $stream
-     * @param string $type
+     * @param string       $type
      */
     public function __construct(StringStream $stream, string $type)
     {
@@ -76,6 +84,9 @@ class RData
         $this->type   = $type;
     }
 
+    /**
+     * @return array
+     */
     public function tokenize() : array
     {
         foreach (self::$rdataFormats[$this->type] as $tokenName => $extractor) {
@@ -91,11 +102,11 @@ class RData
      */
     private function endRData()
     {
-
     }
 
     /**
      * TODO multiline comments open
+     *
      * @param string $tokenName
      */
     protected function defaultExtractor(string $tokenName)
@@ -124,13 +135,13 @@ class RData
 
     /**
      * TODO
+     *
      * @param string $tokenName
      */
     protected function txtExtractor(string $tokenName)
     {
-
     }
-    
+
 //    /**
 //     * Parsing rdata which syntax is relatively default
 //     * @param $rdata_name

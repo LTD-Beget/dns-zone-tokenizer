@@ -1,8 +1,8 @@
 <?php
 /**
  * @author: Viskov Sergey
- * @date: 8/4/15
- * @time: 9:31 PM
+ * @date  : 8/4/15
+ * @time  : 9:31 PM
  */
 
 namespace LTDBeget\dns;
@@ -13,6 +13,7 @@ use LTDBeget\stringstream\StringStream;
 
 /**
  * Class Tokenizer
+ *
  * @package LTDBeget\dns
  */
 final class Tokenizer
@@ -23,17 +24,18 @@ final class Tokenizer
     private $stream;
     /**
      * Result of tokenize input string
+     *
      * @var array
      */
     private $tokens = [];
     /**
      * @var string
      */
-    private $ttl = null;
+    private $ttl = NULL;
     /**
      * @var null
      */
-    private $origin = null;
+    private $origin = NULL;
     /**
      * @var array
      */
@@ -42,16 +44,28 @@ final class Tokenizer
         'ttl'    => true
     ];
 
+    /**
+     * Tokenizer constructor.
+     *
+     * @param string $string
+     */
     private function __construct(string $string)
     {
         $this->stream = new StringStream($string);
     }
 
+    /**
+     * @param string $plainData
+     * @return array
+     */
     public static function tokenize(string $plainData) : array
     {
         return (new self($plainData))->tokenizeInternal()->tokens;
     }
 
+    /**
+     * @return Tokenizer
+     */
     private function tokenizeInternal() : Tokenizer
     {
         do {
@@ -89,11 +103,14 @@ final class Tokenizer
         }
     }
 
+    /**
+     * @param string $variableName
+     */
     private function extractGlobalVariableValue(string $variableName)
     {
         start:
         $char = $this->stream->currentAscii();
-        $this->$variableName .= '';
+        $this->{$variableName} .= '';
         if ($char->isLetter() ||
             $char->isDigit() ||
             $char->is(AsciiChar::UNDERSCORE) ||
@@ -102,7 +119,7 @@ final class Tokenizer
             $char->is(AsciiChar::AT_SYMBOL) ||
             $char->is(AsciiChar::ASTERISK)
         ) {
-            $this->$variableName .= $this->stream->current();
+            $this->{$variableName} .= $this->stream->current();
             $this->stream->next();
             goto start;
         } elseif ($char->isWhiteSpace()) {

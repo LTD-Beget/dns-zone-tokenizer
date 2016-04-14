@@ -1,8 +1,8 @@
 <?php
 /**
  * @author: Viskov Sergey
- * @date: 8/5/15
- * @time: 1:34 PM
+ * @date  : 8/5/15
+ * @time  : 1:34 PM
  */
 
 namespace LTDBeget\dns;
@@ -12,6 +12,7 @@ use LTDBeget\stringstream\StringStream;
 
 /**
  * Class SyntaxErrorException
+ *
  * @package LTDBeget\dns
  */
 class SyntaxErrorException extends \RuntimeException
@@ -31,11 +32,12 @@ class SyntaxErrorException extends \RuntimeException
 
     /**
      * SyntaxErrorException constructor.
-     * @param StringStream $stream
-     * @param int $code
+     *
+     * @param StringStream   $stream
+     * @param int            $code
      * @param Exception|null $previous
      */
-    public function __construct(StringStream $stream, int $code = 0, Exception $previous = null)
+    public function __construct(StringStream $stream, int $code = 0, Exception $previous = NULL)
     {
         if ($stream->isEnd()) {
             $stream->end();
@@ -79,7 +81,7 @@ class SyntaxErrorException extends \RuntimeException
         do {
             $string .= $stream->current();
             $stream->next();
-        } while (! $stream->isEnd());
+        } while (!$stream->isEnd());
 
         return $string;
     }

@@ -1,12 +1,11 @@
 <?php
 /**
  * @author: Viskov Sergey
- * @date: 14.04.16
- * @time: 2:33
+ * @date  : 14.04.16
+ * @time  : 2:33
  */
 
 namespace LTDBeget\dns\record;
-
 
 use LTDBeget\ascii\AsciiChar;
 use LTDBeget\dns\SyntaxErrorException;
@@ -14,6 +13,7 @@ use LTDBeget\stringstream\StringStream;
 
 /**
  * Class Record
+ *
  * @package LTDBeget\dns\record
  */
 class Record
@@ -38,11 +38,12 @@ class Record
 
     /**
      * Record constructor.
+     *
      * @param StringStream $stream
-     * @param string $globalOrigin
-     * @param string $globalTtl
+     * @param string       $globalOrigin
+     * @param string       $globalTtl
      */
-    public function __construct(StringStream $stream, string $globalOrigin = null, string $globalTtl = null)
+    public function __construct(StringStream $stream, string $globalOrigin = NULL, string $globalTtl = NULL)
     {
         $this->stream       = $stream;
         $this->globalOrigin = $globalOrigin;
