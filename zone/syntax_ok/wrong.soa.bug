@@ -1,19 +1,9 @@
-$TTL	3600
 @	3600 IN	SOA     ns1.beget.ru. hostmaster.beget.ru. (
-                     2013052001
-			   3600
-			    600
-                          86400
-
-
-
-
-			   3600
-)
+                     2013041517         ; Serial
+			   3600		; Refresh
+			    600         ; Retry
+                          86400         ; Expire
+			   3600 )	; Negative Cache TTL
+;
 @	3600 IN	NS	ns1.beget.ru.
 @	3600 IN	NS	ns2.beget.ru.
-;; SYSTEM
-1       3600 IN      PTR     rt00.beget.ru.
-
-;; webace
-133     3600 IN      PTR     modelsworld.ru.

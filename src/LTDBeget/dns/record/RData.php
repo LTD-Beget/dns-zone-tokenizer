@@ -170,13 +170,14 @@ class RData
                     $this->stream->next();
                 }
                 goto start;
-            } elseif(($ord === AsciiChar::LINE_FEED || $ord === AsciiChar::NULL) && $this->commentOpen) {
+            } elseif(($this->stream->currentAscii()->isVerticalSpace() || $ord === AsciiChar::NULL) && $this->commentOpen) {
                 $this->stream->next();
+                $this->stream->ignoreHorizontalSpace();
                 $this->commentOpen = false;
                 goto start;
             } elseif($this->commentOpen) {
                 $this->commentOpen = true;
-                $this->stream->next();
+                $this->ignoreComment();
                 goto start;
             } elseif(!$this->commentOpen) {
                 if($ord === AsciiChar::SPACE && $this->tokens[$tokenName] === "") {
@@ -190,6 +191,15 @@ class RData
                     goto start;
                 }
             }
+        }
+    }
+
+    private function ignoreComment()
+    {
+        start:
+        if (!$this->stream->currentAscii()->isVerticalSpace() && !$this->stream->isEnd()) {
+            $this->stream->next();
+            goto start;
         }
     }
     

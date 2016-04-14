@@ -41,4 +41,12 @@ class SyntaxOkTest extends PHPUnit_Framework_TestCase
         $plain_config = file_get_contents($config_path);
         $this->assertEquals($expected, Tokenizer::tokenize($plain_config));
     }
+
+    public function testWrongSoa()
+    {
+        $expected = json_decode('[{"NAME":"@","TTL":"3600","TYPE":"SOA","RDATA":{"MNAME":"ns1.beget.ru.","RNAME":"hostmaster.beget.ru.","SERIAL":"2013041517","REFRESH":"3600","RETRY":"600","EXPIRE":"86400","MINIMUM":"3600"}},{"NAME":"@","TTL":"3600","TYPE":"NS","RDATA":{"NSDNAME":"ns1.beget.ru."}},{"NAME":"@","TTL":"3600","TYPE":"NS","RDATA":{"NSDNAME":"ns2.beget.ru."}}]', true);
+        $config_path = realpath(__DIR__ . "/../zone/syntax_ok/wrong.soa.bug");
+        $plain_config = file_get_contents($config_path);
+        $this->assertEquals($expected, Tokenizer::tokenize($plain_config));
+    }
 }
