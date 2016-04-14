@@ -16,38 +16,35 @@ use LTDBeget\stringstream\StringStream;
  */
 class SyntaxErrorException extends \RuntimeException
 {
-//    /**
-//     * SyntaxErrorException constructor.
-//     * @param StringStream $stream
-//     * @param int $code
-//     * @param Exception|null $previous
-//     */
-//    public function __construct(StringStream $stream, int $code = 0, Exception $previous = null)
-//    {
-//        if($stream->isEnd()) {
-//            $stream->end();
-//        }
-//
-//        $this->unexpected_char = $stream->current();
-//        $this->error_line      = $this->getParseErrorLineNumber($stream);
-//        $message               = sprintf($this->messageTemplate, $this->unexpected_char, $this->error_line);
-//        parent::__construct($message, $code, $previous);
-//    }
+    /**
+     * @var int
+     */
+    private $error_line;
+    /**
+     * @var string
+     */
+    private $unexpected_char;
+    /**
+     * @var string
+     */
+    private $messageTemplate = "Parse error: syntax error, unexpected '%s' on line %d.";
 
     /**
-     * @return int
+     * SyntaxErrorException constructor.
+     * @param StringStream $stream
+     * @param int $code
+     * @param Exception|null $previous
      */
-    public function getErrorLine()
+    public function __construct(StringStream $stream, int $code = 0, Exception $previous = null)
     {
-        return $this->error_line;
-    }
+        if ($stream->isEnd()) {
+            $stream->end();
+        }
 
-    /**
-     * @return string
-     */
-    public function getUnexpectedChar()
-    {
-        return $this->unexpected_char;
+        $this->unexpected_char = $stream->current();
+        $this->error_line      = $this->getParseErrorLineNumber($stream);
+        $message               = sprintf($this->messageTemplate, $this->unexpected_char, $this->error_line);
+        parent::__construct($message, $code, $previous);
     }
 
     /**
@@ -88,16 +85,18 @@ class SyntaxErrorException extends \RuntimeException
     }
 
     /**
-     * @var int
+     * @return int
      */
-    private $error_line;
-    /**
-     * @var string
-     */
-    private $unexpected_char;
+    public function getErrorLine()
+    {
+        return $this->error_line;
+    }
 
     /**
-     * @var string
+     * @return string
      */
-    private $messageTemplate = "Parse error: syntax error, unexpected '%s' on line %d.";
+    public function getUnexpectedChar()
+    {
+        return $this->unexpected_char;
+    }
 }
