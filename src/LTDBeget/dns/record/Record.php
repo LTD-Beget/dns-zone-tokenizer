@@ -35,19 +35,38 @@ class Record
      * @var array
      */
     private $tokens = [];
+    /**
+     * @var bool
+     */
+    private $isFirst;
+    /**
+     * @var string
+     */
+    private $previousName;
 
     /**
      * Record constructor.
      *
      * @param StringStream $stream
-     * @param string       $globalOrigin
-     * @param string       $globalTtl
+     * @param string|NULL  $globalOrigin
+     * @param string|NULL  $globalTtl
+     * @param bool         $isFirst
+     * @param string       $previousName
      */
-    public function __construct(StringStream $stream, string $globalOrigin = NULL, string $globalTtl = NULL)
+    public function __construct
+    (
+        StringStream $stream,
+        string $globalOrigin = NULL,
+        string $globalTtl = NULL,
+        bool $isFirst = false,
+        string $previousName = NULL
+    )
     {
         $this->stream       = $stream;
         $this->globalOrigin = $globalOrigin;
         $this->globalTtl    = $globalTtl;
+        $this->isFirst      = $isFirst;
+        $this->previousName = $previousName;
     }
 
     /**
@@ -56,8 +75,8 @@ class Record
     public function tokenize() : array
     {
         if ($this->isRecordClass()) {
-            if (!empty($this->globalOrigin)) {
-                $this->tokens["NAME"] = $this->globalOrigin;
+            if (!empty($this->previousName)) {
+                $this->tokens["NAME"] = $this->previousName;
             } else {
                 throw new SyntaxErrorException($this->stream);
             }
@@ -76,24 +95,31 @@ class Record
         if ($this->isRecordClass()) {
             if (!empty($this->globalTtl)) {
                 $this->tokens["TTL"] = $this->globalTtl;
-            } elseif (!empty($this->globalOrigin)) {
+            } elseif (!empty($this->previousName)) {
                 $this->tokens["TTL"]  = $this->tokens['NAME'];
-                $this->tokens["NAME"] = $this->globalOrigin;
+                $this->tokens["NAME"] = $this->previousName;
             } else {
                 throw new SyntaxErrorException($this->stream);
             }
             goto in;
         }
-
+        
         $this->defaultExtractor('TTL');
         $this->stream->ignoreHorizontalSpace();
         in:
-        $this->ignoreIn();
-        $this->stream->ignoreHorizontalSpace();
-        $this->defaultExtractor('TYPE');
+        $this->extractClass();
+        
         $this->stream->ignoreHorizontalSpace();
         $this->extractRData();
 
+        if($this->globalOrigin && substr($this->tokens['NAME'], -1) !== '.' && $this->tokens['NAME'] !== '@') {
+            if($this->globalOrigin === '.') {
+                $this->tokens['NAME'] .= $this->globalOrigin;
+            } else {
+                $this->tokens['NAME'] .= '.'.$this->globalOrigin;
+            }
+        }
+        
         return $this->tokens;
     }
 
@@ -131,29 +157,70 @@ class Record
 
         start:
         $char = $this->stream->currentAscii();
-        if ($char->isPrintableChar() && !$char->isHorizontalSpace()) {
+        if ($char->isPrintableChar() && !$char->isWhiteSpace()) {
             $this->tokens[$tokenName] .= $this->stream->current();
             $this->stream->next();
             goto start;
-        } elseif ($char->isHorizontalSpace()) {
-            return;
-        } else {
-            throw new SyntaxErrorException($this->stream);
         }
     }
 
-    private function ignoreIn()
+    private function extractClass()
     {
-        if ($this->stream->currentAscii()->is(AsciiChar::I_UPPERCASE())) {
+        if ($this->stream->currentAscii()->is(AsciiChar::I_UPPERCASE)) {
             $this->stream->next();
+            if ($this->stream->currentAscii()->is(AsciiChar::N_UPPERCASE)) {
+                $this->stream->next();
+                
+                $this->stream->ignoreHorizontalSpace();
+                $this->defaultExtractor('TYPE');
+                $this->stream->ignoreHorizontalSpace();
+            
+            } else {
+                throw new SyntaxErrorException($this->stream);
+            }
         } else {
-            throw new SyntaxErrorException($this->stream);
-        }
+            if($this->isFirst) {
+                throw new SyntaxErrorException($this->stream);
+            } else {
+                if(RData::isKnownType($this->tokens["NAME"]) && ! RData::isKnownType($this->tokens["TTL"])) {
+                    // no ttl and no origin in record, and in TTL Rdata
+                    last_chance:
+                    if($this->previousName && $this->globalTtl) {
+                        $this->tokens['TYPE'] = $this->tokens["NAME"];
+                        $this->tokens["NAME"] = $this->previousName;
+                        $this->tokens["TTL"]  = $this->globalTtl;
+                    } else {
+                        throw new SyntaxErrorException($this->stream);
+                    }
+                } elseif(!RData::isKnownType($this->tokens["NAME"]) && RData::isKnownType($this->tokens["TTL"])) {
+                    $this->tokens['TYPE'] = $this->tokens["TTL"];
+                    if($this->previousName && ! $this->globalTtl) {
+                        $this->tokens["TTL"] =  $this->tokens["NAME"];
+                        $this->tokens["NAME"] = $this->previousName;
+                    } elseif(! $this->previousName && $this->globalTtl) {
+                        $this->tokens["TTL"] =  $this->globalTtl;
+                    } elseif($this->previousName && $this->globalTtl) {
+                        $this->tokens["TTL"] = $this->globalTtl;
+                    } else {
+                        throw new SyntaxErrorException($this->stream);
+                    }
 
-        if ($this->stream->currentAscii()->is(AsciiChar::N_UPPERCASE())) {
-            $this->stream->next();
-        } else {
-            throw new SyntaxErrorException($this->stream);
+                } elseif(RData::isKnownType($this->tokens["NAME"]) && RData::isKnownType($this->tokens["TTL"])) {
+                    goto last_chance;
+                } else {
+                    throw new SyntaxErrorException($this->stream);
+                }
+
+                do {
+                    $char = $this->stream->currentAscii();
+                    $this->stream->previous();
+                } while($char->isWhiteSpace());
+
+                do {
+                    $char = $this->stream->currentAscii();
+                    $this->stream->previous();
+                } while($char->isPrintableChar() && ! $char->isHorizontalSpace());
+            }
         }
     }
 

@@ -45,6 +45,11 @@ final class Tokenizer
     ];
 
     /**
+     * @var int
+     */
+    private $recordsAmmount = 0;
+
+    /**
      * Tokenizer constructor.
      *
      * @param string $string
@@ -108,6 +113,7 @@ final class Tokenizer
      */
     private function extractGlobalVariableValue(string $variableName)
     {
+        $this->{$variableName} = '';
         start:
         $char = $this->stream->currentAscii();
         $this->{$variableName} .= '';
@@ -140,6 +146,14 @@ final class Tokenizer
 
     private function extractRecord()
     {
-        $this->tokens[] = (new Record($this->stream, $this->origin, $this->ttl))->tokenize();
+        $isFirst = $this->recordsAmmount === 0;
+        if(! $isFirst ) {
+            $lastParsedRecord = end($this->tokens);
+            $previousName = $lastParsedRecord['NAME'];
+        } else {
+            $previousName = NULL;
+        }
+        $this->tokens[] = (new Record($this->stream, $this->origin, $this->ttl, $isFirst, $previousName))->tokenize();
+        $this->recordsAmmount++;
     }
 }

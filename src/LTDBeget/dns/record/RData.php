@@ -7,6 +7,7 @@
 
 namespace LTDBeget\dns\record;
 
+use LTDBeget\ascii\AsciiChar;
 use LTDBeget\dns\SyntaxErrorException;
 use LTDBeget\stringstream\StringStream;
 
@@ -69,6 +70,16 @@ class RData
     private $tokens = [];
 
     /**
+     * @var bool
+     */
+    private $commentOpen = false;
+
+    /**
+     * @var bool
+     */
+    private $multiLineOpened = false;
+
+    /**
      * RData constructor.
      *
      * @param StringStream $stream
@@ -76,12 +87,21 @@ class RData
      */
     public function __construct(StringStream $stream, string $type)
     {
-        if (!array_key_exists($type, self::$rdataFormats)) {
+        if (! self::isKnownType($type)) {
             throw new SyntaxErrorException($stream);
         }
 
         $this->stream = $stream;
         $this->type   = $type;
+    }
+
+    /**
+     * @param string $type
+     * @return bool
+     */
+    public static function isKnownType(string $type) : bool
+    {
+        return array_key_exists($type, self::$rdataFormats);
     }
 
     /**
@@ -92,189 +112,199 @@ class RData
         foreach (self::$rdataFormats[$this->type] as $tokenName => $extractor) {
             $this->$extractor($tokenName);
         }
-        $this->endRData();
+        
+        $this->endRecord();
 
         return $this->tokens;
     }
-
+    
     /**
-     * TODO
-     */
-    private function endRData()
-    {
-    }
-
-    /**
-     * TODO multiline comments open
-     *
      * @param string $tokenName
      */
     protected function defaultExtractor(string $tokenName)
+    {
+        $this->commentOpen = false;
+        
+        if (!array_key_exists($tokenName, $this->tokens)) {
+            $this->tokens[$tokenName] = '';
+        }
+        
+        start:
+
+        $ord = $this->stream->ord();
+
+        if($ord == AsciiChar::NULL) {
+            return;
+        }
+
+        if($ord === AsciiChar::OPEN_BRACKET && !$this->commentOpen) {
+            $this->multiLineOpened = true;
+            $this->stream->next();
+            goto start;
+        } elseif($this->multiLineOpened && !$this->commentOpen && $ord === AsciiChar::CLOSE_BRACKET) {
+            $this->multiLineOpened = false;
+            $this->stream->next();
+            goto start;
+        } elseif($this->multiLineOpened && !$this->commentOpen && $ord === AsciiChar::LINE_FEED) {
+            $this->stream->next();
+            goto start;
+        } elseif($ord === AsciiChar::LINE_FEED && !$this->commentOpen) {
+            return;
+        } else {
+            if($ord === AsciiChar::SEMICOLON) {
+                $this->stream->previous();
+                if($this->stream->currentAscii()->isHorizontalSpace()) {
+
+                    $this->commentOpen = true;
+                    $this->stream->next();
+                    $this->stream->next();
+                } else {
+                    $this->stream->next();
+                    $this->tokens[$tokenName] .= $this->stream->current();
+                    $this->stream->next();
+                }
+                goto start;
+            } elseif(($ord === AsciiChar::LINE_FEED || $ord === AsciiChar::NULL) && $this->commentOpen) {
+                $this->stream->next();
+                $this->commentOpen = false;
+                goto start;
+            } elseif($this->commentOpen) {
+                $this->commentOpen = true;
+                $this->stream->next();
+                goto start;
+            } elseif(!$this->commentOpen) {
+                if($ord === AsciiChar::SPACE && $this->tokens[$tokenName] === "") {
+                    $this->stream->next();
+                    goto start;
+                } elseif($ord === AsciiChar::SPACE) {
+                    return;
+                } else {
+                    $this->tokens[$tokenName] .= $this->stream->current();
+                    $this->stream->next();
+                    goto start;
+                }
+            }
+        }
+    }
+    
+    protected function endRecord()
+    {
+        start:
+        $ord = $this->stream->ord();
+        if($ord == AsciiChar::NULL) {
+            return;
+        }
+        if($ord === AsciiChar::SEMICOLON) {
+            $this->stream->next();
+            $this->commentOpen = true;
+            goto start;
+        } elseif($this->commentOpen) {
+            if($ord === AsciiChar::NULL() || $ord === AsciiChar::LINE_FEED) {
+                $this->commentOpen = false;
+                goto start;
+            } else {
+                $this->stream->next();
+                $this->commentOpen = true;
+                goto start;
+            }
+        } elseif(!$this->commentOpen)  {
+            if($this->multiLineOpened) {
+                if($ord === AsciiChar::CLOSE_BRACKET) {
+                    $this->multiLineOpened = false;
+                }
+                $this->stream->next();
+                goto start;
+            } elseif($ord === AsciiChar::NULL() || $ord === AsciiChar::LINE_FEED) {
+                return;
+            }
+        }
+    }
+
+    /**
+     * @param string $tokenName
+     */
+    private function txtExtractor(string $tokenName)
     {
         if (!array_key_exists($tokenName, $this->tokens)) {
             $this->tokens[$tokenName] = '';
         }
 
         start:
-        $char = $this->stream->currentAscii();
-        if ($char->isPrintableChar() && !$char->isHorizontalSpace()) {
+        $ord = $this->stream->ord();
+        $this->stream->next();
 
-            $this->tokens[$tokenName] .= $this->stream->current();
-            $this->stream->next();
+        if($ord == 0) { // if end of record
+            return;
+        }
+
+        // comment starts
+        if($ord === 59) {
+            $this->commentOpen = true;
             goto start;
-        } elseif ($char->isHorizontalSpace()) {
-            $this->stream->ignoreHorizontalSpace();
-
-            return;
-        } elseif ($char->isVerticalSpace()) {
-            return;
+        } elseif($this->commentOpen == true && $ord !== 10) {
+            $this->commentOpen = true;
+            goto start;
+        } elseif($this->commentOpen == true && ($ord === 10 || $ord === 0)) {
+            $this->stream->previous();
+            $this->commentOpen = false;
+            goto start;
         } else {
-            throw new SyntaxErrorException($this->stream);
+            // ignore blanck line
+            if($ord === 32) {
+                goto start;
+            }
+
+            // Find starts of char set
+            if($ord === 34 && !$this->commentOpen) { // "
+                $this->extractCharSet($tokenName);
+            }
+
+            // multi line opened
+            if($ord === 40 && !$this->commentOpen) {
+                $this->multiLineOpened = true;
+                goto start;
+            }
+
+            // multi line closed
+            if($this->multiLineOpened && !$this->commentOpen && $ord === 41) {
+                $this->multiLineOpened = false;
+                goto start;
+            }
+
+            // comment end in multi line TXT record
+            if($ord === 10 && $this->commentOpen && $this->multiLineOpened) {
+                goto start;
+            }
+
+            // is record ends?
+            if(!$this->multiLineOpened && ($ord === 10 || $ord === 0)) {
+                return;
+            } elseif($this->multiLineOpened && $ord === 10) {
+                goto start;
+            }
         }
     }
 
     /**
-     * TODO
-     *
      * @param string $tokenName
      */
-    protected function txtExtractor(string $tokenName)
+    private function extractCharSet(string $tokenName)
     {
-    }
+        $escaping_open = false;
+        start:
+        $ord = $this->stream->ord();
+        $this->stream->next();
 
-//    /**
-//     * Parsing rdata which syntax is relatively default
-//     * @param $rdata_name
-//     * @param bool|false $comment_open
-//     */
-//    private function defaultRDataExtractor($rdata_name, $comment_open = false)
-//    {
-//        start:
-//
-//        $ord = current($this->data);
-//        next($this->data);
-//
-//        if($ord == 0) {
-//            return;
-//        }
-//
-//        if($ord === 40 && !$comment_open) { // multi line opened ; 40 = (
-//            $this->multiLineOpened = true;
-//            goto start;
-//        } elseif($this->multiLineOpened && !$comment_open && $ord === 41) { // multi line closed; 41 = )
-//            $this->multiLineOpened = false;
-//            goto start;
-//        } elseif($this->multiLineOpened && !$comment_open && $ord === 10) { // // multi line end line
-//            goto start;
-//        } elseif($ord === 10 && !$comment_open) { // if end of record
-//            return;
-//        } else { // meaningfull symbol
-//            if($ord === 59) { // 59 = ;
-//                $comment_open = true;
-//                goto start;
-//            } elseif(($ord === 10 || $ord === 0) && $comment_open) {
-//                prev($this->data);
-//                $comment_open = false;
-//                goto start;
-//            } elseif($comment_open) {
-//                $comment_open = true;
-//                goto start;
-//            } elseif(!$comment_open) {
-//                if($ord === 32 && $this->parsedRData[$rdata_name] === "") { // ignore space at start
-//                    goto start;
-//                } elseif($ord === 32) {
-//                    return;
-//                } else {
-//                    $this->parsedRData[$rdata_name] .= chr($ord);
-//                    goto start;
-//                }
-//            }
-//        }
-//    }
-//
-//    /**
-//     * Parsing rdata for TXT resource record
-//     * @param bool|false $comment_open
-//     */
-//    private function extractTxtBlocks($comment_open = false)
-//    {
-//        start:
-//
-//        $ord = current($this->data);
-//        next($this->data);
-//
-//        if($ord == 0) { // if end of record
-//            return;
-//        }
-//
-//        // comment starts
-//        if($ord === 59) {
-//            $comment_open = true;
-//            goto start;
-//        } elseif($comment_open == true && $ord !== 10) {
-//            $comment_open = true;
-//            goto start;
-//        } elseif($comment_open == true && ($ord === 10 || $ord === 0)) {
-//            prev($this->data);
-//            $comment_open = false;
-//            goto start;
-//        } else {
-//            // ignore blanck line
-//            if($ord === 32) {
-//                goto start;
-//            }
-//
-//            // Find starts of char set
-//            if($ord === 34 && !$comment_open) { // "
-//                $this->extractCharSet();
-//            }
-//
-//            // multi line opened
-//            if($ord === 40 && !$comment_open) {
-//                $this->multiLineOpened = true;
-//                goto start;
-//            }
-//
-//            // multi line closed
-//            if($this->multiLineOpened && !$comment_open && $ord === 41) {
-//                $this->multiLineOpened = false;
-//                goto start;
-//            }
-//
-//            // comment end in multi line TXT record
-//            if($ord === 10 && $comment_open && $this->multiLineOpened) {
-//                goto start;
-//            }
-//
-//            // is record ends?
-//            if(!$this->multiLineOpened && ($ord === 10 || $ord === 0)) {
-//                return;
-//            } elseif($this->multiLineOpened && $ord === 10) {
-//                goto start;
-//            }
-//        }
-//    }
-//
-//    /**
-//     * Parsing TXT record char set
-//     * @param bool|false $escaping_open
-//     */
-//    private function extractCharSet($escaping_open = false)
-//    {
-//        start:
-//        $ord = current($this->data);
-//        next($this->data);
-//
-//        if($ord == 0) { // if end of record
-//            return;
-//        }
-//
-//        if(!$escaping_open && $ord === 34) {
-//            $this->extractTxtBlocks();
-//        } else {
-//            $this->parsedRData["TXTDATA"] .= chr($ord);
-//            $escaping_open = ($ord === 92 and !$escaping_open);
-//            goto start;
-//        }
-//    }
+        if($ord == 0) { // if end of record
+            return;
+        }
+
+        if(!$escaping_open && $ord === 34) {
+            $this->txtExtractor($tokenName);
+        } else {
+            $this->tokens[$tokenName] .= chr($ord);
+            $escaping_open = ($ord === 92 && !$escaping_open);
+            goto start;
+        }
+    }
 }
