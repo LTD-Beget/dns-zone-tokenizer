@@ -182,7 +182,7 @@ class RData
                 if($ord === AsciiChar::SPACE && $this->tokens[$tokenName] === "") {
                     $this->stream->next();
                     goto start;
-                } elseif($ord === AsciiChar::SPACE) {
+                } elseif($this->stream->currentAscii()->isHorizontalSpace()) {
                     return;
                 } else {
                     $this->tokens[$tokenName] .= $this->stream->current();
