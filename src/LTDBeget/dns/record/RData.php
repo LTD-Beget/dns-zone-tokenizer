@@ -123,6 +123,12 @@ class RData
      */
     protected function defaultExtractor(string $tokenName)
     {
+        if($this->multiLineOpened) {
+            $this->stream->ignoreWhitespace();
+        } else {
+            $this->stream->ignoreHorizontalSpace();
+        }
+        
         $this->commentOpen = false;
         
         if (!array_key_exists($tokenName, $this->tokens)) {
