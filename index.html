@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Dns-zone-tokenizer by LTD-Beget</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Dns-zone-tokenizer</h1>
+      <h2 class="project-tagline">Dnszone file lexical parser</h2>
+      <a href="https://github.com/LTD-Beget/dns-zone-tokenizer" class="btn">View on GitHub</a>
+      <a href="https://github.com/LTD-Beget/dns-zone-tokenizer/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/LTD-Beget/dns-zone-tokenizer/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="php-dns-zone-tokenizer" class="anchor" href="#php-dns-zone-tokenizer" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Php dns-zone-tokenizer</h1>
+
+<p><a href="https://packagist.org/packages/ltd-beget/dns-zone-tokenizer"><img src="https://poser.pugx.org/ltd-beget/dns-zone-tokenizer/version" alt="Latest Stable Version"></a> 
+<a href="https://packagist.org/packages/ltd-beget/dns-zone-tokenizer"><img src="https://poser.pugx.org/ltd-beget/dns-zone-tokenizer/downloads" alt="Total Downloads"></a>
+<a href="https://scrutinizer-ci.com/g/LTD-Beget/dns-zone-tokenizer/?branch=master"><img src="https://scrutinizer-ci.com/g/LTD-Beget/dns-zone-tokenizer/badges/quality-score.png?b=master" alt="Scrutinizer Code Quality"></a>
+<a href="https://scrutinizer-ci.com/g/LTD-Beget/dns-zone-tokenizer/?branch=master"><img src="https://scrutinizer-ci.com/g/LTD-Beget/dns-zone-tokenizer/badges/coverage.png?b=master" alt="Code Coverage"></a>
+<a href="https://scrutinizer-ci.com/g/LTD-Beget/dns-zone-tokenizer/build-status/master"><img src="https://scrutinizer-ci.com/g/LTD-Beget/dns-zone-tokenizer/badges/build.png?b=master" alt="Build Status"></a>
+<a href="http://ltd-beget.github.io/dns-zone-tokenizer/documentation/html/index.html"><img src="https://img.shields.io/badge/code-documented-brightgreen.svg" alt="Documentation"></a>
+<a href="http://ltd-beget.github.io/dns-zone-tokenizer/coverage/index.html"><img src="https://img.shields.io/badge/code-coverage-brightgreen.svg" alt="Documentation"></a>
+<a href="https://github.com/LTD-Beget/dns-zone-tokenizer/blob/master/LICENSE"><img src="http://img.shields.io/badge/license-MIT-blue.svg?style=flat" alt="License MIT"></a></p>
+
+<p>Tokenize dns zone files and that's all, folks.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<div class="highlight highlight-source-shell"><pre>composer require ltd-beget/dns-zone-tokenizer</pre></div>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-pse">&lt;?php</span><span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-k">use</span> <span class="pl-c1">LTDBeget\dns\Tokenizer</span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-k">require</span>(<span class="pl-c1">__DIR__</span> <span class="pl-k">.</span> <span class="pl-s"><span class="pl-pds">'</span>/vendor/autoload.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-smi">$config_path</span> <span class="pl-k">=</span> <span class="pl-c1">realpath</span>(<span class="pl-c1">__DIR__</span><span class="pl-k">.</span><span class="pl-s"><span class="pl-pds">"</span>/zone/exampleZone<span class="pl-pds">"</span></span>); <span class="pl-c">// path to your dns zone file</span></span>
+<span class="pl-s1">    <span class="pl-smi">$plain_config</span> <span class="pl-k">=</span> <span class="pl-c1">file_get_contents</span>(<span class="pl-smi">$config_path</span>);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-smi">$tokenized</span> <span class="pl-k">=</span> <span class="pl-c1">Tokenizer</span><span class="pl-k">::</span>tokenize(<span class="pl-smi">$plain_config</span>); <span class="pl-c">// that's all, folks. All is done =)</span></span>
+<span class="pl-s1"></span></pre></div>
+
+<h2>
+<a id="developers" class="anchor" href="#developers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Developers</h2>
+
+<h3>
+<a id="regenerate-documentation" class="anchor" href="#regenerate-documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Regenerate documentation</h3>
+
+<div class="highlight highlight-source-shell"><pre>$ ./vendor/bin/phpdox</pre></div>
+
+<h3>
+<a id="run-tests" class="anchor" href="#run-tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Run tests</h3>
+
+<div class="highlight highlight-source-shell"><pre>$ wget https://phar.phpunit.de/phpunit.phar</pre></div>
+
+<div class="highlight highlight-source-shell"><pre>$ php phpunit.phar --coverage-html coverage</pre></div>
+
+<div class="highlight highlight-source-shell"><pre>$ php phpunit.phar --coverage-clover coverage.xml</pre></div>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+
+<p>released under the MIT License.
+See the <a href="LICENSE">bundled LICENSE file</a> for details.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/LTD-Beget/dns-zone-tokenizer">Dns-zone-tokenizer</a> is maintained by <a href="https://github.com/LTD-Beget">LTD-Beget</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
