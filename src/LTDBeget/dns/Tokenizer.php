@@ -31,11 +31,11 @@ final class Tokenizer
     /**
      * @var string
      */
-    private $ttl = NULL;
+    private $ttl;
     /**
      * @var null
      */
-    private $origin = NULL;
+    private $origin;
     /**
      * @var array
      */
@@ -91,7 +91,7 @@ final class Tokenizer
 
     private function extractGlobalVariable()
     {
-        $variableName = "";
+        $variableName = '';
         start:
         if ($this->stream->currentAscii()->isLetter()) {
             $variableName .= $this->stream->current();

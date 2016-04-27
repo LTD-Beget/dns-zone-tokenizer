@@ -76,13 +76,13 @@ class Record
     {
         if ($this->isRecordClass()) {
             if (!empty($this->previousName)) {
-                $this->tokens["NAME"] = $this->previousName;
+                $this->tokens['NAME'] = $this->previousName;
             } else {
                 throw new SyntaxErrorException($this->stream);
             }
 
             if (!empty($this->globalTtl)) {
-                $this->tokens["TTL"] = $this->globalTtl;
+                $this->tokens['TTL'] = $this->globalTtl;
             } else {
                 throw new SyntaxErrorException($this->stream);
             }
@@ -94,10 +94,10 @@ class Record
 
         if ($this->isRecordClass()) {
             if (!empty($this->globalTtl)) {
-                $this->tokens["TTL"] = $this->globalTtl;
+                $this->tokens['TTL'] = $this->globalTtl;
             } elseif (!empty($this->previousName)) {
-                $this->tokens["TTL"]  = $this->tokens['NAME'];
-                $this->tokens["NAME"] = $this->previousName;
+                $this->tokens['TTL']  = $this->tokens['NAME'];
+                $this->tokens['NAME'] = $this->previousName;
             } else {
                 throw new SyntaxErrorException($this->stream);
             }
@@ -182,30 +182,30 @@ class Record
             if($this->isFirst) {
                 throw new SyntaxErrorException($this->stream);
             } else {
-                if(RData::isKnownType($this->tokens["NAME"]) && ! RData::isKnownType($this->tokens["TTL"])) {
+                if(RData::isKnownType($this->tokens['NAME']) && ! RData::isKnownType($this->tokens['TTL'])) {
                     // no ttl and no origin in record, and in TTL Rdata
                     last_chance:
                     if($this->previousName && $this->globalTtl) {
-                        $this->tokens['TYPE'] = $this->tokens["NAME"];
-                        $this->tokens["NAME"] = $this->previousName;
-                        $this->tokens["TTL"]  = $this->globalTtl;
+                        $this->tokens['TYPE'] = $this->tokens['NAME'];
+                        $this->tokens['NAME'] = $this->previousName;
+                        $this->tokens['TTL']  = $this->globalTtl;
                     } else {
                         throw new SyntaxErrorException($this->stream);
                     }
-                } elseif(!RData::isKnownType($this->tokens["NAME"]) && RData::isKnownType($this->tokens["TTL"])) {
-                    $this->tokens['TYPE'] = $this->tokens["TTL"];
+                } elseif(!RData::isKnownType($this->tokens['NAME']) && RData::isKnownType($this->tokens['TTL'])) {
+                    $this->tokens['TYPE'] = $this->tokens['TTL'];
                     if($this->previousName && ! $this->globalTtl) {
-                        $this->tokens["TTL"] =  $this->tokens["NAME"];
-                        $this->tokens["NAME"] = $this->previousName;
+                        $this->tokens['TTL']  =  $this->tokens['NAME'];
+                        $this->tokens['NAME'] = $this->previousName;
                     } elseif(! $this->previousName && $this->globalTtl) {
-                        $this->tokens["TTL"] =  $this->globalTtl;
+                        $this->tokens['TTL'] =  $this->globalTtl;
                     } elseif($this->previousName && $this->globalTtl) {
-                        $this->tokens["TTL"] = $this->globalTtl;
+                        $this->tokens['TTL'] = $this->globalTtl;
                     } else {
                         throw new SyntaxErrorException($this->stream);
                     }
 
-                } elseif(RData::isKnownType($this->tokens["NAME"]) && RData::isKnownType($this->tokens["TTL"])) {
+                } elseif(RData::isKnownType($this->tokens['NAME']) && RData::isKnownType($this->tokens['TTL'])) {
                     goto last_chance;
                 } else {
                     throw new SyntaxErrorException($this->stream);

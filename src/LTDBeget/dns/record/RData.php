@@ -51,10 +51,10 @@ class RData
             'PTRDNAME' => 'defaultExtractor'
         ],
         'SRV'   => [
-            "PRIORITY" => 'defaultExtractor',
-            "WEIGHT"   => 'defaultExtractor',
-            "PORT"     => 'defaultExtractor',
-            "TARGET"   => 'defaultExtractor'
+            'PRIORITY' => 'defaultExtractor',
+            'WEIGHT'   => 'defaultExtractor',
+            'PORT'     => 'defaultExtractor',
+            'TARGET'   => 'defaultExtractor'
         ],
         'TXT'   => [
             'TXTDATA' => 'txtExtractor'
@@ -139,7 +139,7 @@ class RData
 
         $ord = $this->stream->ord();
 
-        if($ord == AsciiChar::NULL) {
+        if($ord === AsciiChar::NULL) {
             return;
         }
 
@@ -180,14 +180,17 @@ class RData
                 $this->ignoreComment();
                 goto start;
             } elseif(!$this->commentOpen) {
-                if($ord === AsciiChar::SPACE && $this->tokens[$tokenName] === "") {
+                if($ord === AsciiChar::SPACE && $this->tokens[$tokenName] === '') {
                     $this->stream->next();
                     goto start;
-                } elseif($this->stream->currentAscii()->isHorizontalSpace()) {
+                } elseif($this->stream->currentAscii()->isWhiteSpace()) {
                     return;
                 } else {
                     $this->tokens[$tokenName] .= $this->stream->current();
                     $this->stream->next();
+                    if($this->stream->isEnd()) {
+                        $this->tokens[$tokenName] = trim($this->tokens[$tokenName]);
+                    }
                     goto start;
                 }
             }
@@ -207,7 +210,7 @@ class RData
     {
         start:
         $ord = $this->stream->ord();
-        if($ord == AsciiChar::NULL) {
+        if($ord === AsciiChar::NULL) {
             return;
         }
         if($ord === AsciiChar::SEMICOLON) {
@@ -249,7 +252,7 @@ class RData
         $ord = $this->stream->ord();
         $this->stream->next();
 
-        if($ord == 0) { // if end of record
+        if($ord === 0) { // if end of record
             return;
         }
 
@@ -257,10 +260,10 @@ class RData
         if($ord === 59) {
             $this->commentOpen = true;
             goto start;
-        } elseif($this->commentOpen == true && $ord !== 10) {
+        } elseif($this->commentOpen === true && $ord !== 10) {
             $this->commentOpen = true;
             goto start;
-        } elseif($this->commentOpen == true && ($ord === 10 || $ord === 0)) {
+        } elseif($this->commentOpen === true && ($ord === 10 || $ord === 0)) {
             $this->stream->previous();
             $this->commentOpen = false;
             goto start;
@@ -311,7 +314,7 @@ class RData
         $ord = $this->stream->ord();
         $this->stream->next();
 
-        if($ord == 0) { // if end of record
+        if($ord === 0) { // if end of record
             return;
         }
 
