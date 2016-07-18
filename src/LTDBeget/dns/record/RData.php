@@ -314,13 +314,17 @@ class RData
         $ord = $this->stream->ord();
         $this->stream->next();
 
-        if($ord === 0) { // if end of record
-            return;
+        if($ord === AsciiChar::NULL) { // if end of record
+            throw new SyntaxErrorException($this->stream);
         }
 
         if(!$escaping_open && $ord === 34) {
             $this->txtExtractor($tokenName);
         } else {
+            if($ord === AsciiChar::LINE_FEED || $ord === AsciiChar::VERTICAL_TAB || $ord === AsciiChar::NULL) {
+                $this->stream->previous();
+                throw new SyntaxErrorException($this->stream);
+            }
             $this->tokens[$tokenName] .= chr($ord);
             $escaping_open = ($ord === 92 && !$escaping_open);
             goto start;
