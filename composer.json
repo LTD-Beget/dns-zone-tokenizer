@@ -13,12 +13,13 @@
     }
   ],
   "require": {
-    "php": ">=7.0",
+    "php": "~7.1",
     "ltd-beget/stringstream" : "~1.0"
   },
   "require-dev": {
+    "ext-json": "~1.0",
     "theseer/phpdox": "0.8.*",
-    "phpunit/phpunit": "5.2.*",
+    "phpunit/phpunit": "~7.3",
     "tideways/profiler": "2.0.*"
   },
   "autoload": {
