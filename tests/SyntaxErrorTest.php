@@ -1,12 +1,13 @@
 <?php
 use LTDBeget\dns\Tokenizer;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author: Viskov Sergey
  * @date  : 4/14/16
  * @time  : 8:35 PM
  */
-class SyntaxErrorTest extends PHPUnit_Framework_TestCase
+class SyntaxErrorTest extends TestCase
 {
     /**
      * @expectedException \LTDBeget\dns\SyntaxErrorException
