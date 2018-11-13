@@ -1,5 +1,6 @@
 <?php
 use LTDBeget\dns\Tokenizer;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author: voksiv
@@ -7,7 +8,7 @@ use LTDBeget\dns\Tokenizer;
  * @time:   13:51
  */
 
-class SyntaxOkTest extends PHPUnit_Framework_TestCase
+class SyntaxOkTest extends TestCase
 {
 
     public function testExampleCom()
