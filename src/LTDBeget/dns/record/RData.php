@@ -58,6 +58,11 @@ class RData
         ],
         'TXT'   => [
             'TXTDATA' => 'txtExtractor'
+        ],
+        'CAA' => [
+            'FLAGS' => 'defaultExtractor',
+            'TAG'   => 'defaultExtractor',
+            'VALUE' => 'defaultExtractor'
         ]
     ];
     /**
