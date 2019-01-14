@@ -63,6 +63,14 @@ class RData
             'FLAGS' => 'defaultExtractor',
             'TAG'   => 'defaultExtractor',
             'VALUE' => 'defaultExtractor'
+        ],
+        'NAPTR' => [
+            'ORDER'       => 'defaultExtractor',
+            'PREFERENCE'  => 'defaultExtractor',
+            'FLAGS'       => 'defaultExtractor',
+            'SERVICES'    => 'defaultExtractor',
+            'REGEXP'      => 'defaultExtractor',
+            'REPLACEMENT' => 'defaultExtractor'
         ]
     ];
     /**
