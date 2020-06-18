@@ -203,6 +203,7 @@ class RData
                     $this->stream->next();
                     if($this->stream->isEnd()) {
                         $this->tokens[$tokenName] = trim($this->tokens[$tokenName]);
+                        return;
                     }
                     goto start;
                 }
