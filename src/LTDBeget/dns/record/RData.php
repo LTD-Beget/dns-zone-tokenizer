@@ -152,7 +152,7 @@ class RData
 
         $ord = $this->stream->ord();
 
-        if($ord === AsciiChar::NULL) {
+        if($ord === AsciiChar::NULL || $this->stream->isEnd()) {
             return;
         }
 
