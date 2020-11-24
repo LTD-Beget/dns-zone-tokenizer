@@ -125,12 +125,12 @@ class RData
         foreach (self::$rdataFormats[$this->type] as $tokenName => $extractor) {
             $this->$extractor($tokenName);
         }
-        
+
         $this->endRecord();
 
         return $this->tokens;
     }
-    
+
     /**
      * @param string $tokenName
      */
@@ -141,13 +141,13 @@ class RData
         } else {
             $this->stream->ignoreHorizontalSpace();
         }
-        
+
         $this->commentOpen = false;
-        
+
         if (!array_key_exists($tokenName, $this->tokens)) {
             $this->tokens[$tokenName] = '';
         }
-        
+
         start:
 
         if ($this->stream->isEnd()){
@@ -217,14 +217,14 @@ class RData
             goto start;
         }
     }
-    
+
     protected function endRecord()
     {
         start:
-        $ord = $this->stream->ord();
-        if($ord === AsciiChar::NULL) {
+        if ($this->stream->isEnd()) {
             return;
         }
+        $ord = $this->stream->ord();
         if($ord === AsciiChar::SEMICOLON) {
             $this->stream->next();
             $this->commentOpen = true;
@@ -261,12 +261,11 @@ class RData
         }
 
         start:
-        $ord = $this->stream->ord();
-        $this->stream->next();
-
-        if($ord === 0) { // if end of record
+        if ($this->stream->isEnd()) {
             return;
         }
+        $ord = $this->stream->ord();
+        $this->stream->next();
 
         // comment starts
         if($ord === 59) {
@@ -323,12 +322,11 @@ class RData
     {
         $escaping_open = false;
         start:
-        $ord = $this->stream->ord();
-        $this->stream->next();
-
-        if($ord === AsciiChar::NULL) { // if end of record
+        if ($this->stream->isEnd()) {
             throw new SyntaxErrorException($this->stream);
         }
+        $ord = $this->stream->ord();
+        $this->stream->next();
 
         if(!$escaping_open && $ord === 34) {
             $this->txtExtractor($tokenName);
