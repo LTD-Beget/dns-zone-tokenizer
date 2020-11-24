@@ -150,11 +150,10 @@ class RData
         
         start:
 
-        $ord = $this->stream->ord();
-
-        if($ord === AsciiChar::NULL) {
+        if ($this->stream->isEnd()){
             return;
         }
+        $ord = $this->stream->ord();
 
         if($ord === AsciiChar::OPEN_BRACKET && !$this->commentOpen) {
             $this->multiLineOpened = true;
