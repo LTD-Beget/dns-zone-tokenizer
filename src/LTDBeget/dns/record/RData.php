@@ -305,6 +305,11 @@ class RData
             if($ord === 10 && $this->commentOpen && $this->multiLineOpened) {
                 goto start;
             }
+            
+            // multi line ignore tabs
+            if ($this->multiLineOpened && $ord === 9) {
+                goto start;
+            }
 
             // is record ends?
             if(!$this->multiLineOpened && ($ord === 10 || $ord === 0)) {
@@ -312,6 +317,11 @@ class RData
             } elseif($this->multiLineOpened && $ord === 10) {
                 goto start;
             }
+        }
+        
+        // multi line should no longer be open
+        if($this->multiLineOpened) {
+            throw new SyntaxErrorException($this->stream);
         }
     }
 
