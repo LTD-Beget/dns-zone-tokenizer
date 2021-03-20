@@ -93,6 +93,12 @@ class RData
     private $multiLineOpened = false;
 
     /**
+     * Is the txt record surrounded by quotes
+     * @var bool
+     */
+    private $txtRecordHasQuotes = false;
+
+    /**
      * RData constructor.
      *
      * @param StringStream $stream
@@ -268,54 +274,56 @@ class RData
         $this->stream->next();
 
         // comment starts
-        if($ord === 59) {
+        if($ord === AsciiChar::SEMICOLON) {
             $this->commentOpen = true;
             goto start;
-        } elseif($this->commentOpen === true && $ord !== 10) {
+        } elseif($this->commentOpen === true && $ord !== AsciiChar::LINE_FEED) {
             $this->commentOpen = true;
             goto start;
-        } elseif($this->commentOpen === true && ($ord === 10 || $ord === 0)) {
+        } elseif($this->commentOpen === true && ($ord === AsciiChar::LINE_FEED || $ord === AsciiChar::NULL)) {
             $this->stream->previous();
             $this->commentOpen = false;
             goto start;
         } else {
-            // ignore blanck line
-            if($ord === 32) {
+            // ignore whitespace
+            if($ord === AsciiChar::SPACE || $ord === AsciiChar::HORIZONTAL_TAB) {
                 goto start;
             }
 
             // Find starts of char set
-            if($ord === 34 && !$this->commentOpen) { // "
-                $this->extractCharSet($tokenName);
-            }
+            // if($ord === AsciiChar::DOUBLE_QUOTES && !$this->commentOpen) { // "
+            //     $this->extractCharSet($tokenName);
+            // }
 
             // multi line opened
-            if($ord === 40 && !$this->commentOpen) {
+            if($ord === AsciiChar::OPEN_BRACKET && !$this->commentOpen) {
                 $this->multiLineOpened = true;
                 goto start;
             }
-
             // multi line closed
-            if($this->multiLineOpened && !$this->commentOpen && $ord === 41) {
+            elseif($this->multiLineOpened && !$this->commentOpen && $ord === AsciiChar::CLOSE_BRACKET) {
                 $this->multiLineOpened = false;
                 goto start;
             }
-
             // comment end in multi line TXT record
-            if($ord === 10 && $this->commentOpen && $this->multiLineOpened) {
+            elseif($ord === AsciiChar::LINE_FEED && $this->commentOpen && $this->multiLineOpened) {
                 goto start;
             }
-            
-            // multi line ignore tabs
-            if ($this->multiLineOpened && $ord === 9) {
-                goto start;
-            }
-
             // is record ends?
-            if(!$this->multiLineOpened && ($ord === 10 || $ord === 0)) {
+            elseif(!$this->multiLineOpened && ($ord === AsciiChar::LINE_FEED || $ord === AsciiChar::NULL)) {
                 return;
-            } elseif($this->multiLineOpened && $ord === 10) {
+            } elseif($this->multiLineOpened && $ord === AsciiChar::LINE_FEED) {
                 goto start;
+            }
+            elseif(!$this->commentOpen) {
+                // Double quotes aren't required to start a string, but if they start the string then they must also end the string
+                if($ord !== AsciiChar::DOUBLE_QUOTES) {
+                    $this->stream->previous();
+                    $this->txtRecordHasQuotes = false;
+                } else {
+                    $this->txtRecordHasQuotes = true;
+                }
+                $this->extractCharSet($tokenName);
             }
         }
         
@@ -337,16 +345,20 @@ class RData
         }
         $ord = $this->stream->ord();
         $this->stream->next();
-
-        if(!$escaping_open && $ord === 34) {
+        if(!$escaping_open && $ord === AsciiChar::DOUBLE_QUOTES) {
             $this->txtExtractor($tokenName);
         } else {
             if($ord === AsciiChar::LINE_FEED || $ord === AsciiChar::VERTICAL_TAB || $ord === AsciiChar::NULL) {
-                $this->stream->previous();
-                throw new SyntaxErrorException($this->stream);
+                if($this->txtRecordHasQuotes) {
+                    $this->stream->previous();
+                    throw new SyntaxErrorException($this->stream);
+                }
+                else {
+                    return;
+                }
             }
             $this->tokens[$tokenName] .= chr($ord);
-            $escaping_open = ($ord === 92 && !$escaping_open);
+            $escaping_open = ($ord === AsciiChar::BACKSLASH && !$escaping_open);
             goto start;
         }
     }
