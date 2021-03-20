@@ -290,11 +290,6 @@ class RData
                 goto start;
             }
 
-            // Find starts of char set
-            // if($ord === AsciiChar::DOUBLE_QUOTES && !$this->commentOpen) { // "
-            //     $this->extractCharSet($tokenName);
-            // }
-
             // multi line opened
             if($ord === AsciiChar::OPEN_BRACKET && !$this->commentOpen) {
                 $this->multiLineOpened = true;
@@ -345,8 +340,12 @@ class RData
         }
         $ord = $this->stream->ord();
         $this->stream->next();
-        if(!$escaping_open && $ord === AsciiChar::DOUBLE_QUOTES) {
+
+        if(!$escaping_open && $this->txtRecordHasQuotes && $ord === AsciiChar::DOUBLE_QUOTES) {
             $this->txtExtractor($tokenName);
+        } elseif(!$escaping_open && !$this->txtRecordHasQuotes && $ord === AsciiChar::SPACE) {
+            // If there aren't quotes around a character string, a space terminates the string
+            return;
         } else {
             if($ord === AsciiChar::LINE_FEED || $ord === AsciiChar::VERTICAL_TAB || $ord === AsciiChar::NULL) {
                 if($this->txtRecordHasQuotes) {
