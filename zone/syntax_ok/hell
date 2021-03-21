@@ -21,7 +21,7 @@ www 600 IN TXT "@ A 79.125.10.157 "
 txt3 600 IN TXT ( 	"www CNAME "  ";;;"   
 
 
-	  ";'werwerwer'\0010\"quotetest" )
+	  ";'werwerwer'\0010\\"quotetest" )
 nstest 300 IN NS ns1
 nstest2   300 IN NS 85.249.229.194;111
 xn----7sbfndkfpirgcajeli2a4pnc.xn----7sbbfcqfo2cfcagacemif0ap5q 300 IN NS 1.1.1.1

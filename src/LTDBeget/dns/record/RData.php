@@ -343,7 +343,7 @@ class RData
 
         if(!$escaping_open && $this->txtRecordHasQuotes && $ord === AsciiChar::DOUBLE_QUOTES) {
             $this->txtExtractor($tokenName);
-        } elseif(!$escaping_open && !$this->txtRecordHasQuotes && $ord === AsciiChar::SPACE) {
+        } elseif(!$this->txtRecordHasQuotes && $ord === AsciiChar::SPACE) {
             // If there aren't quotes around a character string, a space terminates the string
             return;
         } else {
@@ -356,8 +356,16 @@ class RData
                     return;
                 }
             }
+
             $this->tokens[$tokenName] .= chr($ord);
-            $escaping_open = ($ord === AsciiChar::BACKSLASH && !$escaping_open);
+
+            // Escaping open is only set for one iteration so that it doesn't break on double slashes ie. \\
+            if($ord === AsciiChar::BACKSLASH) {
+                $escaping_open = true;
+            } else {
+                $escaping_open = false;
+            }
+
             goto start;
         }
     }
