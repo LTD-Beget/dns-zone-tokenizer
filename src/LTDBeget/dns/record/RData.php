@@ -93,6 +93,11 @@ class RData
     private $multiLineOpened = false;
 
     /**
+     * @var StringStream
+     */
+    private $stream;
+
+    /**
      * RData constructor.
      *
      * @param StringStream $stream
