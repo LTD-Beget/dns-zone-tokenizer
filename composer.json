@@ -14,7 +14,7 @@
   ],
   "require": {
     "php": ">=7.0",
-    "ltd-beget/stringstream" : "~1.0 || dev-BH-15288"
+    "ltd-beget/stringstream" : "^1.0 || ^2.0"
   },
   "require-dev": {
     "ext-json": "*",
