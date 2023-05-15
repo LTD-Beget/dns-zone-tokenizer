@@ -9,13 +9,11 @@ use PHPUnit\Framework\TestCase;
  */
 class SyntaxErrorTest extends TestCase
 {
-    /**
-     * @expectedException \LTDBeget\dns\SyntaxErrorException
-     */
     public function testWtfZone()
     {
         $config_path = realpath(__DIR__ . "/../zone/syntax_error/wtf.zone");
         $plain_config = file_get_contents($config_path);
+        $this->expectException(\LTDBeget\dns\SyntaxErrorException::class);
         Tokenizer::tokenize($plain_config);
     }
 }
