@@ -37,7 +37,7 @@ class SyntaxErrorException extends \RuntimeException
      * @param int            $code
      * @param Exception|null $previous
      */
-    public function __construct(StringStream $stream, int $code = 0, Exception $previous = NULL)
+    public function __construct(StringStream $stream, int $code = 0, ?Exception $previous = NULL)
     {
         if ($stream->isEnd()) {
             $stream->end();
