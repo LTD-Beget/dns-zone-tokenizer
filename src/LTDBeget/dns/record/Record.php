@@ -56,10 +56,10 @@ class Record
     public function __construct
     (
         StringStream $stream,
-        string $globalOrigin = NULL,
-        string $globalTtl = NULL,
+        ?string $globalOrigin = NULL,
+        ?string $globalTtl = NULL,
         bool $isFirst = false,
-        string $previousName = NULL
+        ?string $previousName = NULL
     )
     {
         $this->stream       = $stream;
@@ -103,12 +103,12 @@ class Record
             }
             goto in;
         }
-        
+
         $this->defaultExtractor('TTL');
         $this->stream->ignoreHorizontalSpace();
         in:
         $this->extractClass();
-        
+
         $this->stream->ignoreHorizontalSpace();
         $this->extractRData();
 
@@ -119,7 +119,7 @@ class Record
                 $this->tokens['NAME'] .= '.'.$this->globalOrigin;
             }
         }
-        
+
         return $this->tokens;
     }
 
@@ -170,11 +170,11 @@ class Record
             $this->stream->next();
             if ($this->stream->currentAscii()->is(AsciiChar::N_UPPERCASE)) {
                 $this->stream->next();
-                
+
                 $this->stream->ignoreHorizontalSpace();
                 $this->defaultExtractor('TYPE');
                 $this->stream->ignoreHorizontalSpace();
-            
+
             } else {
                 throw new SyntaxErrorException($this->stream);
             }
