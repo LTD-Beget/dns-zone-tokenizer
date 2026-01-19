@@ -40,6 +40,9 @@ class RData
         'CNAME' => [
             'CNAME' => 'defaultExtractor'
         ],
+        'DNAME' => [
+            'DNAME' => 'defaultExtractor'
+        ],
         'MX'    => [
             'PREFERENCE' => 'defaultExtractor',
             'EXCHANGE'   => 'defaultExtractor'
